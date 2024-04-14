@@ -1,0 +1,6 @@
+rsync -avrx -e 'ssh -i /home/ridham/Downloads/nginx-keypair.pem -o StrictHostKeyChecking=no' --delete /home/ridham/Desktop/MERN/server/ ubuntu@43.205.237.58:/home/ubuntu/chat_app/dockerc/server/
+
+
+43.205.237.58
+
+MONGO_URL="mongodb://172.24.238.6:27017/chat"
