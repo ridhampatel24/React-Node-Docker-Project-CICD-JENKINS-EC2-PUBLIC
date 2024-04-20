@@ -7,7 +7,7 @@ pipeline {
         EC2_HOST = '13.232.7.145'
         EC2_USER = 'ubuntu'
         PRIVATE_KEY = '/var/lib/jenkins/ridham-ngnix-keypair.pem'
-        DOCKER_IMAGE_NAME = 'ridhampatel24/jenkins-backend-project'
+        DOCKER_IMAGE_NAME = 'ridhampatel/jenkins-backend-project'
     }
 
     stages {
