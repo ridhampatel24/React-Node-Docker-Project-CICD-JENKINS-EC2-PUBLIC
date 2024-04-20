@@ -48,25 +48,24 @@ pipeline {
             }
         }        
         
-        // stage('Run Docker Image on AWS EC2') {
-        //     steps {
-        //         script {
-        //             // This command will delete any contianer running on 5000 so this new docker container run easily.
-        //             def commands = """
-        //                 cd reactapp/client
-        //                 npm install
-        //                 cd 
-        //                 docker rmi -f divyapatel42/jenkins-backend-project || true
-        //                 docker rm -f \$(docker ps -q --filter "publish=5000/tcp")
-        //                 docker run -d -p 5000:5000 divyapatel42/jenkins-backend-project:nodebackend
-        //             """
-        //             // SSH into EC2 instance and pull Docker image
-        //             sshagent(['ec2-ssh']) {
-        //             sh "ssh -o StrictHostKeyChecking=no -i ${PRIVATE_KEY} ${EC2_USER}@${EC2_HOST} '${commands}'"
-        //             }
-        //         }
-        //     }
-        // }
+        stage('Run Docker Image on AWS EC2') {
+            steps {
+                script {
+                    // This command will delete any contianer running on 5000 so this new docker container run easily.
+                    def commands = """
+                        cd 
+                        docker rmi -f ridhampatel/jenkins-backend-project || true
+                        docker rm -f \$(docker ps -q --filter "publish=5000/tcp")
+                        docker run -d -p 5000:5000 ridhampatel/jenkins-backend-project:nodebackend
+                        sudo systemctl restart nginx
+                    """
+                    // SSH into EC2 instance and pull Docker image
+                    sshagent(['ec2-ssh']) {
+                    sh "ssh -o StrictHostKeyChecking=no -i ${PRIVATE_KEY} ${EC2_USER}@${EC2_HOST} '${commands}'"
+                    }
+                }
+            }
+        }
     }
     post {
         success {
