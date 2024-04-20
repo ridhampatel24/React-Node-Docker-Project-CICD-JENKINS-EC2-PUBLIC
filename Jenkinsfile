@@ -1,0 +1,80 @@
+pipeline {
+    agent any
+    tools {
+        nodejs "Node-21"
+    }
+    environment {
+        EC2_HOST = '13.232.7.145'
+        EC2_USER = 'ubuntu'
+        PRIVATE_KEY = '/var/lib/jenkins/nginx-keypair.pem'
+        DOCKER_IMAGE_NAME = 'ridhampatel24/jenkins-backend-project'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                // Checkout the source code from your Git repository
+               script {
+                   git branch: 'main', url: 'https://github.com/ridhampatel24/React-Node-Docker-Project-CICD-JENKINS-EC2-PUBLIC.git', credentialsId: 'github-id' 
+                }
+            }
+        }
+
+        stage('Build React App') {
+            steps {
+                // Build React app
+                sh 'cd public && npm install && npm run build && cd build && pwd'
+            }
+        }
+        
+        stage('Transfer Frotend to EC2') {
+            steps {
+                script {
+                      // Optional: Use rsyn to copy the entire folder to the EC2 instance.
+                    sh "rsync -avrx -e 'ssh -i ${PRIVATE_KEY} -o StrictHostKeyChecking=no' --delete /var/lib/jenkins/workspace/React-Node-Docker-Project-CICD-JENKINS-EC2-PUBLIC/client ${EC2_USER}@${EC2_HOST}:~/reactapp/"                  
+                }
+            }
+        }
+        
+        stage('Build and push Docker Image') {
+            steps {
+                script {
+                     // Build Docker image for Node Backend
+                    sh 'whoami'
+                    dockerImage = docker.build("${DOCKER_IMAGE_NAME}:nodebackend", " ./server")
+                    docker.withRegistry( '', 'docker-id' ) {  
+                        dockerImage.push("nodebackend")
+                    }
+                }
+            }
+        }        
+        
+        stage('Run Docker Image on AWS EC2') {
+            steps {
+                script {
+                    // This command will delete any contianer running on 5000 so this new docker container run easily.
+                    def commands = """
+                        cd reactapp/client
+                        npm install
+                        cd 
+                        docker rmi -f divyapatel42/jenkins-backend-project || true
+                        docker rm -f \$(docker ps -q --filter "publish=5000/tcp")
+                        docker run -d -p 5000:5000 divyapatel42/jenkins-backend-project:nodebackend
+                    """
+                    // SSH into EC2 instance and pull Docker image
+                    sshagent(['ec2-ssh']) {
+                    sh "ssh -o StrictHostKeyChecking=no -i ${PRIVATE_KEY} ${EC2_USER}@${EC2_HOST} '${commands}'"
+                    }
+                }
+            }
+        }
+    }
+    post {
+        success {
+            echo 'Pipeline succeeded. Node.js app deployed to AWS EC2.'
+        }
+        failure {
+            echo 'Pipeline failed. Check the logs for errors.'
+        }
+    }
+}
