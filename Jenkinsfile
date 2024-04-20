@@ -6,7 +6,7 @@ pipeline {
     environment {
         EC2_HOST = '13.232.7.145'
         EC2_USER = 'ubuntu'
-        PRIVATE_KEY = '/var/lib/jenkins/nginx-keypair.pem'
+        PRIVATE_KEY = '/var/lib/jenkins/ridham-nginx-keypair.pem'
         DOCKER_IMAGE_NAME = 'ridhampatel24/jenkins-backend-project'
     }
 
