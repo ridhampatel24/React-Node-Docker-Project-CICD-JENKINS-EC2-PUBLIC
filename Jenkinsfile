@@ -4,7 +4,7 @@ pipeline {
         nodejs "Node-21"
     }
     environment {
-        EC2_HOST = '15.206.123.104'
+        EC2_HOST = '3.108.215.161'
         EC2_USER = 'ubuntu'
         PRIVATE_KEY = '/var/lib/jenkins/ridham-ngnix-keypair.pem'
         DOCKER_IMAGE_NAME = 'ridhampatel/jenkins-backend-project'
