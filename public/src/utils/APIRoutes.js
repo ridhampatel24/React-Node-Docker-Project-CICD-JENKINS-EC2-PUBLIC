@@ -1,4 +1,4 @@
-export const host = "https://backend.ridhampatel.tech";
+export const host = "http://3.108.215.161:5000";
 export const loginRoute = `${host}/api/auth/login`;
 export const registerRoute = `${host}/api/auth/register`;
 export const logoutRoute = `${host}/api/auth/logout`;
