@@ -19,7 +19,7 @@ jobs:
                 node-version: 20
     
           
-           - run: echo "${{ secrets.SSH_PRIVATE_KEY }}" > /tmp/id_rsa.pem
+           - run: echo ${{ secrets.SSH_PRIVATE_KEY }} > /tmp/id_rsa.pem
            - run: chmod 600 /tmp/id_rsa.pem
 
            - name: Install dependencies
