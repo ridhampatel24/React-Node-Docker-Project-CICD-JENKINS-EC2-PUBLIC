@@ -17,6 +17,10 @@ jobs:
              uses: actions/setup-node@v3
              with:
                 node-version: 20
+    
+          
+           - run: echo "${{ secrets.SSH_PRIVATE_KEY }}" > /tmp/id_rsa.pem
+           - run: chmod 600 /tmp/id_rsa.pem
 
            - name: Install dependencies
              run: cd public && npm install
@@ -25,10 +29,7 @@ jobs:
              
            - name: Build React app
              run: cd public && npm run build
-           - run: mkdir /tmp
-           - run: echo "${{ secrets.SSH_PRIVATE_KEY }}" > /tmp/id_rsa
-           - run: chmod 600 /tmp/id_rsa
-           - run: scp -i /tmp/id_rsa -r public/build/* ubuntu@13.235.83.187:/home/ubuntu/ridham-app/
+           - run: scp -i /tmp/id_rsa.pem -r public/build/* ubuntu@13.235.83.187:/home/ubuntu/ridham-app/
 
         #    - name: Upload to AWS EC2
         #      uses: appleboy/scp-action@master
