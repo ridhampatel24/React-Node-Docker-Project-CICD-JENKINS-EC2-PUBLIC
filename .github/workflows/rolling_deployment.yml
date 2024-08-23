@@ -1,0 +1,66 @@
+name: Rolling Deployment
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Set Up SSH Agent
+        uses: webfactory/ssh-agent@v0.8.1
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Determine Current Backend Port
+        id: get_port
+        run: |
+          ssh -o StrictHostKeyChecking=no ubuntu@13.235.83.187 "cat /home/ubuntu/port.txt" > port.txt
+          echo "Current Port: $(cat port.txt)"
+          
+      - name: Switch Backend Port
+        id: switch_port
+        run: |
+          CURRENT_PORT=$(cat port.txt)
+          if [ "$CURRENT_PORT" = "5000" ]; then
+            NEW_PORT="6000"
+          else
+            NEW_PORT="5000"
+          fi
+          echo $NEW_PORT | ssh -o StrictHostKeyChecking=no ubuntu@13.235.83.187 "cat > /home/ubuntu/port.txt"
+          echo "Switched to Port: $NEW_PORT"
+          echo "PORT=$NEW_PORT" >> $GITHUB_ENV
+
+      - name: Set $PORT on EC2
+        run: |
+            ssh -o StrictHostKeyChecking=no ubuntu@13.235.83.187 "echo 'export PORT=$NEW_PORT' >> ~/.bashrc"
+            ssh -o StrictHostKeyChecking=no ubuntu@13.235.83.187 "source ~/.bashrc"
+
+      - name: Deploy New Backend Container
+        run: |
+          ssh -o StrictHostKeyChecking=no ubuntu@13.235.83.187 << 'EOF'
+            docker container run -d -p $PORT:8080 ridhampatel/react-app
+            exit
+          EOF
+
+      - name: Update Nginx with New Port
+        run: |
+          ssh -o StrictHostKeyChecking=no ubuntu@13.235.83.187 << 'EOF'
+            sudo sed -i "s/:5000/:$PORT/" /etc/nginx/conf.d/test.conf
+            sudo sed -i "s/:6000/:$PORT/" /etc/nginx/conf.d/test.conf
+            sudo systemctl reload nginx
+            exit
+          EOF
+
+      - name: Remove Old Backend Container
+        run: |
+          ssh -o StrictHostKeyChecking=no ubuntu@13.235.83.187 << 'EOF'
+            OLD_PORT=$(if [ "$PORT" = "6000" ]; then echo "5000"; else echo "6000"; fi)
+            docker ps -q --filter "ancestor=ridhampatel/react-app" --filter "publish=$OLD_PORT:8080" | xargs --no-run-if-empty docker container stop
+            docker ps -aq --filter "ancestor=ridhampatel/react-app" --filter "publish=$OLD_PORT:8080" | xargs --no-run-if-empty docker container rm
+            exit
+          EOF
