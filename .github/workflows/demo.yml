@@ -26,11 +26,13 @@ jobs:
            - name: Build React app
              run: cd public && npm run build
 
-           - name: Upload to AWS EC2
-             uses: appleboy/scp-action@master
-             with:
-                    host: 13.235.83.187
-                    username: ubuntu
-                    key: ${{ secrets.SSH_PRIVATE_KEY }}
-                    source: public/build/*
-                    target: /home/ubuntu/ridham-app/
+           - run: scp -i ${{ secrets.SSH_PRIVATE_KEY }} -r public/build/* ubuntu@13.235.83.187:/home/ubuntu/ridham-app/
+
+        #    - name: Upload to AWS EC2
+        #      uses: appleboy/scp-action@master
+        #      with:
+        #             host: 13.235.83.187
+        #             username: ubuntu
+        #             key: ${{ secrets.SSH_PRIVATE_KEY }}
+        #             source: public/build/*
+        #             target: /home/ubuntu/ridham-app/
