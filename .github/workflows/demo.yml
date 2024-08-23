@@ -33,7 +33,7 @@ jobs:
              
            - name: Build React app
              run: cd public && npm run build
-           - run: scp -o StrictHostKeyChecking=no -i /tmp/id_rsa.pem -r public/build/* ubuntu@13.235.83.187:/home/ubuntu/ridham-app/
+           - run: rsync -o StrictHostKeyChecking=no -i /tmp/id_rsa.pem -r public/build/* ubuntu@13.235.83.187:/home/ubuntu/ridham-app/
            - run: rm /tmp/id_rsa.pem
         #    - name: Upload to AWS EC2
         #      uses: appleboy/scp-action@master
