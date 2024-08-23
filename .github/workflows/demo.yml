@@ -25,7 +25,8 @@ jobs:
              
            - name: Build React app
              run: cd public && npm run build
-           - run: echo ${{ secrets.SSH_PRIVATE_KEY }} > /tmp/id_rsa
+           - run: mkdir /tmp
+           - run: echo "${{ secrets.SSH_PRIVATE_KEY }}" > /tmp/id_rsa
            - run: chmod 600 /tmp/id_rsa
            - run: scp -i /tmp/id_rsa -r public/build/* ubuntu@13.235.83.187:/home/ubuntu/ridham-app/
 
