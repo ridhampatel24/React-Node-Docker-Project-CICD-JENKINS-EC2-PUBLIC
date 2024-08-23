@@ -33,4 +33,4 @@ jobs:
                     username: ubuntu
                     key: ${{ secrets.SSH_PRIVATE_KEY }}
                     source: public/build/*
-                    target: /home/ubuntu/ridham-app
+                    target: /home/ubuntu/ridham-app/
