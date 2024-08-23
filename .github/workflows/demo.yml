@@ -13,6 +13,7 @@ jobs:
            - run: echo "${{ secrets.SSH_PRIVATE_KEY }}" > /tmp/id_rsa.pem
            - run: cat /tmp/id_rsa.pem
            - run: chmod 600 /tmp/id_rsa.pem
+           - run: ssh -i /tmp/id_rsa.pem ubuntu@13.235.83.187
 
            - name: Checkout code
              uses: actions/checkout@v2
