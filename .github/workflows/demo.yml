@@ -32,5 +32,5 @@ jobs:
                     host: 13.235.83.187
                     username: ubuntu
                     key: ${{ secrets.SSH_PRIVATE_KEY }}
-                    source: public/build/
+                    source: public/build/*
                     target: /home/ubuntu/ridham-app
