@@ -1,9 +1,10 @@
 name: React Build and Upload
 
 on:
-    push:
-        branches:
-            - main
+    workflow_dispatch:
+    # push:
+    #     branches:
+    #         - main
 
 jobs:
     build_and_upload:
