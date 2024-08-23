@@ -22,7 +22,7 @@ jobs:
              run: cd public && npm install
 
            - name: Build React app
-             run: npm run build
+             run: pwd && npm run build
 
            - name: Upload to AWS EC2
              uses: appleboy/scp-action@master
