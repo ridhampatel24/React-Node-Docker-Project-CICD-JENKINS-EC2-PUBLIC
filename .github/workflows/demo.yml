@@ -21,6 +21,8 @@ jobs:
            - name: Install dependencies
              run: cd public && npm install
 
+           - run: pwd
+             
            - name: Build React app
              run: pwd && npm run build
 
