@@ -1,0 +1,33 @@
+name: React Build and Upload
+
+on:
+    push:
+        branches:
+            - main
+
+jobs:
+    build_and_upload:
+        runs-on: ubuntu-latest
+        steps:
+           - name: Checkout code
+             uses: actions/checkout@v2
+
+           - name: Set up Node.js
+             uses: actions/setup-node@v2
+             with:
+                node-version: 14
+
+           - name: Install dependencies
+             run: cd public && npm install
+
+           - name: Build React app
+             run: npm run build
+
+           - name: Upload to AWS EC2
+             uses: appleboy/scp-action@master
+             with:
+                    host: 13.235.83.187
+                    username: ubuntu
+                    key: ${{ secrets.SSH_PRIVATE_KEY }}
+                    source: build/
+                    target: /home/ubuntu/ridham-app
