@@ -1,44 +1,45 @@
 name: React Build and Upload
 
 on:
-    workflow_dispatch:
-    # push:
-    #     branches:
-    #         - main
+  workflow_dispatch:
+  # push:
+  #   branches:
+  #     - main
 
 jobs:
-    build_and_upload:
-        runs-on: ubuntu-latest
-        steps:
-           - run: echo "${{ secrets.SSH_PRIVATE_KEY }}" > /tmp/id_rsa.pem
-           - run: cat /tmp/id_rsa.pem
-           - run: chmod 600 /tmp/id_rsa.pem
+  build_and_upload:
+    runs-on: ubuntu-latest
 
-           - name: Checkout code
-             uses: actions/checkout@v2
+    steps:
+      - name: Set Up SSH Private Key
+        run: |
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > /tmp/id_rsa.pem
+          chmod 600 /tmp/id_rsa.pem
 
-           - name: Set up Node.js
-             uses: actions/setup-node@v3
-             with:
-                node-version: 20
-    
-          
-           
+      - name: Checkout Code
+        uses: actions/checkout@v2
 
-           - name: Install dependencies
-             run: cd public && npm install
+      - name: Set Up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
 
-           - run: pwd && ls
-             
-           - name: Build React app
-             run: cd public && npm run build
-           - run: scp -o StrictHostKeyChecking=no -i ${{ secrets.SSH_PRIVATE_KEY }} -r public/build/* ubuntu@13.235.83.187:/home/ubuntu/ridham-app/
-           - run: rm /tmp/id_rsa.pem
-        #    - name: Upload to AWS EC2
-        #      uses: appleboy/scp-action@master
-        #      with:
-        #             host: 13.235.83.187
-        #             username: ubuntu
-        #             key: ${{ secrets.SSH_PRIVATE_KEY }}
-        #             source: public/build/*
-        #             target: /home/ubuntu/ridham-app/
+      - name: Install Dependencies
+        run: |
+          cd public
+          npm install
+
+      - name: Debug - List Project Directory
+        run: pwd && ls
+
+      - name: Build React App
+        run: |
+          cd public
+          npm run build
+
+      - name: Upload Build to Server
+        run: |
+          scp -o StrictHostKeyChecking=no -i /tmp/id_rsa.pem -r public/build/* ubuntu@13.235.83.187:/home/ubuntu/ridham-app/
+
+      - name: Clean Up SSH Private Key
+        run: rm /tmp/id_rsa.pem
