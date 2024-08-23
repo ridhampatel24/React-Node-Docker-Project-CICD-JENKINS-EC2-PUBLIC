@@ -10,6 +10,10 @@ jobs:
     build_and_upload:
         runs-on: ubuntu-latest
         steps:
+           - run: echo "${{ secrets.SSH_PRIVATE_KEY }}" > /tmp/id_rsa.pem
+           - run: cat /tmp/id_rsa.pem
+           - run: chmod 600 /tmp/id_rsa.pem
+
            - name: Checkout code
              uses: actions/checkout@v2
 
@@ -19,8 +23,7 @@ jobs:
                 node-version: 20
     
           
-           - run: echo ${{ secrets.SSH_PRIVATE_KEY }} > /tmp/id_rsa.pem
-           - run: chmod 600 /tmp/id_rsa.pem
+           
 
            - name: Install dependencies
              run: cd public && npm install
