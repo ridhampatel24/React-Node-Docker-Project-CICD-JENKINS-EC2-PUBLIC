@@ -39,7 +39,7 @@ jobs:
 
       - name: Upload Build to Server
         run: |
-          scp -o StrictHostKeyChecking=no -i /tmp/id_rsa.pem -r public/build/* ubuntu@13.235.83.187:/home/ubuntu/ridham-app/
+          scp -o StrictHostKeyChecking=no -i /tmp/id_rsa.pem -rp public/build/* ubuntu@13.235.83.187:/home/ubuntu/ridham-app/
 
       - name: Clean Up SSH Private Key
         run: rm /tmp/id_rsa.pem
