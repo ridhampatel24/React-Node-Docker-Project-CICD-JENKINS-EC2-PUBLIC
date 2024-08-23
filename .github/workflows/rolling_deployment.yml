@@ -49,10 +49,10 @@ jobs:
 
       - name: Update Nginx with New Port
         run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@13.235.83.187 << 'EOF'
-            sudo sed -i "s/:5000/:$PORT/" /etc/nginx/conf.d/test.conf
-            sudo sed -i "s/:6000/:$PORT/" /etc/nginx/conf.d/test.conf
-            sudo systemctl reload nginx
+          ssh -o StrictHostKeyChecking=no root@13.235.83.187 << 'EOF'
+            sed -i "s/:5000/:$PORT/" /etc/nginx/conf.d/test.conf
+            sed -i "s/:6000/:$PORT/" /etc/nginx/conf.d/test.conf
+            systemctl reload nginx
             exit
           EOF
 
